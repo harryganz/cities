@@ -16,8 +16,8 @@ module.exports = {
   },
   del: id => knex.del().from('cities').where('id', id),
   list: (limit, offset) => {
-    const lim = limit || 10;
-    const off = offset || 0;
+    const lim = (limit && limit > 0) ? limit : 10;
+    const off = (offset && offset > 0) ? offset : 0;
     return knex
       .select('id', 'name', 'country', 'created_at', 'updated_at')
       .from('cities')
