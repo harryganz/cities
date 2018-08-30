@@ -33,7 +33,4 @@ describe('cities.drop function', () => {
       .then(exists => expect(exists).toBe(false))
       .then(() => done());
   });
-  after((done) => {
-    knex.destroy(done);
-  });
 });

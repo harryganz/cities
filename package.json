@@ -5,7 +5,7 @@
   "main": "server.js",
   "repository": "https://github.com/harryganz/cities",
   "scripts": {
-    "test": "mocha --recursive src/",
+    "test": "mocha --exit --recursive src/",
     "start": "node server.js"
   },
   "author": "Harry Ganz <hganz@harryganz.com>",
