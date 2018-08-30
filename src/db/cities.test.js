@@ -34,3 +34,25 @@ describe('cities.drop function', () => {
       .then(() => done());
   });
 });
+
+describe('cities.insert function', () => {
+  beforeEach((done) => {
+    cities.create()
+      .then(() => done());
+  });
+  it('adds passed in array of data to cities database', (done) => {
+    const testData = [
+      { name: 'test 1', country: 'test 1' },
+      { name: 'test 2', country: 'test 2' },
+    ];
+
+    cities.insert(testData)
+      .then(() => knex.select('name', 'country').from('cities'))
+      .then(rows => expect(rows).toEqual(testData))
+      .then(() => done());
+  });
+  afterEach((done) => {
+    cities.drop()
+      .then(() => done());
+  });
+});
