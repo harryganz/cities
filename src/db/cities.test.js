@@ -13,7 +13,27 @@ describe('cities.create function', () => {
       .then(exists => expect(exists).toBe(true))
       .then(() => done());
   });
-  after(() => {
-    knex.destroy();
+  after((done) => {
+    knex.schema.dropTableIfExists('cities')
+      .then(() => done());
+  });
+});
+
+describe('cities.drop function', () => {
+  before((done) => {
+    knex.schema.createTable('cities', (table) => {
+      table.increments('id').primary();
+      table.string('name');
+    })
+      .then(() => done());
+  });
+  it('drops the \'cities\' table', (done) => {
+    cities.drop()
+      .then(() => knex.schema.hasTable('cities'))
+      .then(exists => expect(exists).toBe(false))
+      .then(() => done());
+  });
+  after((done) => {
+    knex.destroy(done);
   });
 });
