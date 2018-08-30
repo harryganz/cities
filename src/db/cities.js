@@ -8,7 +8,12 @@ module.exports = {
     table.timestamps();
   }),
   drop: () => knex.schema.dropTableIfExists('cities'),
-  insert: rows => knex.insert(rows).into('cities'),
+  insert: (data) => {
+    if (typeof data !== 'object') {
+      throw new Error('inserted data must be object or array');
+    }
+    return knex.insert(data).into('cities');
+  },
   del: id => knex.del().from('cities').where('id', id),
   list: (limit, offset) => {
     const lim = limit || 10;

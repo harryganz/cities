@@ -40,6 +40,13 @@ describe('cities.insert function', () => {
     cities.create()
       .then(() => done());
   });
+  it('adds passed in single object to cities database', (done) => {
+    const testData = { name: 'test1', country: 'test 2' };
+    cities.insert(testData)
+      .then(() => knex.select('name', 'country').from('cities'))
+      .then(rows => expect(rows[0]).toEqual(testData))
+      .then(() => done());
+  });
   it('adds passed in array of data to cities database', (done) => {
     const testData = [
       { name: 'test 1', country: 'test 1' },
@@ -49,6 +56,43 @@ describe('cities.insert function', () => {
     cities.insert(testData)
       .then(() => knex.select('name', 'country').from('cities'))
       .then(rows => expect(rows).toEqual(testData))
+      .then(() => done());
+  });
+  it('throws an error if passed a non-object type', () => {
+    expect(() => cities.insert()).toThrow();
+  });
+  afterEach((done) => {
+    cities.drop()
+      .then(() => done());
+  });
+});
+describe('cities.del', () => {
+  beforeEach((done) => {
+    cities.create()
+      .then(() => done());
+  });
+  it('deletes row with passed in id', (done) => {
+    let id;
+    cities.insert({ name: 'test 1', country: 'test 1' })
+      .then((ids) => {
+        [id] = ids;
+        return cities.del(id);
+      })
+      .then(() => knex
+        .select('id')
+        .from('cities')
+        .where({ id }))
+      .then(rows => expect(rows).toEqual([]))
+      .then(() => done());
+  });
+  it('does nothing if invalid id passed in', (done) => {
+    cities.insert({ name: 'test 1', country: 'test 1' })
+      .then(() => cities.del(-1))
+      .then(() => knex.count('id as num').from('cities'))
+      .then((rows) => {
+        const [count] = rows;
+        expect(count.num).toBe(1);
+      })
       .then(() => done());
   });
   afterEach((done) => {
