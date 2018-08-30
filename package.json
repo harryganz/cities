@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A demo node application ",
   "main": "server.js",
+  "repository": "https://github.com/harryganz/cities",
   "scripts": {
     "test": "mocha src/**/*.js"
   },
