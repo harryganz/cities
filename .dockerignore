@@ -1,0 +1,8 @@
+# Log files
+*.log
+npm-debug*
+# Node Modules
+node_modules
+# Swap Files
+*.swp
+
