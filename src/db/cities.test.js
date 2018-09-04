@@ -12,11 +12,13 @@ describe('cities.create function', () => {
     cities.create()
       .then(() => knex.schema.hasTable('cities'))
       .then(exists => expect(exists).toBe(true))
-      .finally(() => done());
+      .then(done)
+      .catch(done);
   });
   after((done) => {
     knex.schema.dropTableIfExists('cities')
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
 });
 
@@ -26,27 +28,31 @@ describe('cities.drop function', () => {
       table.increments('id').primary();
       table.string('name');
     })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('drops the \'cities\' table', (done) => {
     cities.drop()
       .then(() => knex.schema.hasTable('cities'))
       .then(exists => expect(exists).toBe(false))
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
 });
 
 describe('cities.insert function', () => {
   beforeEach((done) => {
     cities.create()
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('adds passed in single object to cities database', (done) => {
     const testData = fakeCities()[0];
     cities.insert(testData)
       .then(() => knex.select('name', 'country').from('cities'))
       .then(rows => expect(rows[0]).toEqual(testData))
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('adds passed in array of data to cities database', (done) => {
     const testData = fakeCities(5);
@@ -54,20 +60,23 @@ describe('cities.insert function', () => {
     cities.insert(testData)
       .then(() => knex.select('name', 'country').from('cities'))
       .then(rows => expect(rows).toEqual(testData))
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('throws an error if passed a non-object type', () => {
     expect(() => cities.insert()).toThrow();
   });
   afterEach((done) => {
     cities.drop()
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
 });
 describe('cities.del', () => {
   beforeEach((done) => {
     cities.create()
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('deletes row with passed in id', (done) => {
     let id;
@@ -81,7 +90,8 @@ describe('cities.del', () => {
         .from('cities')
         .where({ id }))
       .then(rows => expect(rows).toEqual([]))
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('does nothing if invalid id passed in', (done) => {
     cities.insert({ name: 'test 1', country: 'test 1' })
@@ -91,11 +101,13 @@ describe('cities.del', () => {
         const [count] = rows;
         expect(count.num).toBe(1);
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   afterEach((done) => {
     cities.drop()
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
 });
 
@@ -104,7 +116,8 @@ describe('cities.list function', () => {
   beforeEach((done) => {
     cities.create()
       .then(() => cities.insert(testData))
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('returns the first 10 items with no arguments passed', (done) => {
     cities.list()
@@ -112,7 +125,8 @@ describe('cities.list function', () => {
         expect(rows.map(el => ({ name: el.name, country: el.country })))
           .toEqual(testData.slice(0, 10));
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('returns the first 5 items if limit of 5 is passed', (done) => {
     cities.list(5)
@@ -120,7 +134,8 @@ describe('cities.list function', () => {
         expect(rows.map(el => ({ name: el.name, country: el.country })))
           .toEqual(testData.slice(0, 5));
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('returns items offset by offset parameter', (done) => {
     cities.list(1, 5)
@@ -128,7 +143,8 @@ describe('cities.list function', () => {
         expect(rows.map(el => ({ name: el.name, country: el.country })))
           .toEqual(testData.slice(5, 6));
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('treats offset lower than zero as zero', (done) => {
     cities.list(1, -1)
@@ -136,7 +152,8 @@ describe('cities.list function', () => {
         expect(rows.map(el => ({ name: el.name, country: el.country })))
           .toEqual(testData.slice(0, 1));
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   it('treats limits lower than zero as 10', (done) => {
     cities.list(-1)
@@ -144,9 +161,12 @@ describe('cities.list function', () => {
         expect(rows.map(el => ({ name: el.name, country: el.country })))
           .toEqual(testData.slice(0, 10));
       })
-      .finally(() => done());
+      .then(() => done())
+      .catch(done);
   });
   afterEach((done) => {
-    cities.drop().finally(() => done());
+    cities.drop()
+      .then(() => done())
+      .catch(done);
   });
 });

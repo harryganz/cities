@@ -19,7 +19,8 @@ describe('GET /api/v1/cities', () => {
         response = request(`http://localhost:${port}`)
           .get('/api/v1/cities');
       })
-      .finally(() => done());
+      .then(done)
+      .catch(done);
   });
   it('returns a 200 status', (done) => {
     response.expect(200, done);
