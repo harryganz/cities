@@ -24,4 +24,5 @@ module.exports = {
       .limit(lim)
       .offset(off);
   },
+  get: id => knex.first().from('cities').where('id', id),
 };

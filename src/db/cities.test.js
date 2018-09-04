@@ -170,3 +170,32 @@ describe('cities.list function', () => {
       .catch(done);
   });
 });
+describe('cities.get function', () => {
+  const testCity = { name: 'test 1', country: 'test ' };
+  beforeEach((done) => {
+    cities.create()
+      .then(() => cities.insert(testCity))
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns the item with the passed in id', (done) => {
+    cities.get(1)
+      .then((row) => {
+        const { name, country } = row;
+        expect({ name, country }).toEqual(testCity);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns undefined if item with id cannot be found', (done) => {
+    cities.get(-1)
+      .then(row => expect(row).toBe(undefined))
+      .then(() => done())
+      .catch(done);
+  });
+  afterEach((done) => {
+    cities.drop()
+      .then(() => done())
+      .catch(done);
+  });
+});
