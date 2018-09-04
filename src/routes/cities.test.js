@@ -126,25 +126,31 @@ describe('POST /api/v1/cities', () => {
     response
       .set('Content-Type', 'application/json')
       .send({ name: 'test 1', country: 'test 1' })
-      .expect(200, done);
-  });
-  it('returns returns a json content type', (done) => {
-    response
-      .set('Content-Type', 'application/json')
-      .send({ name: 'test', country: 'test' })
-      .expect('Content-Type', /json/, done);
+      .expect(302, done);
   });
   it('adds valid city to database', (done) => {
     const testData = { name: 'Test 1', country: 'Test 2' };
     response
       .set('Content-Type', 'application/json')
       .send(testData)
-      .expect(200)
+      .expect(302)
       .then(() => citiesDb.list())
       .then((rows) => {
         expect(pluck(rows[0], ['name', 'country'])).toEqual(testData);
       })
       .then(() => done())
+      .catch(done);
+  });
+  it('redirects to the newly added item\'s show page', (done) => {
+    const testData = { name: 'test 1', country: 'test 2' };
+    response
+      .set('Content-Type', 'application/json')
+      .send(testData)
+      .expect(302)
+      .then((res) => {
+        expect(res.header.location).toMatch(/cities\/1/);
+        done();
+      })
       .catch(done);
   });
   after((done) => {

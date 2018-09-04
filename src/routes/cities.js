@@ -40,12 +40,20 @@ cities.route('/')
     const { body } = req;
 
     citiesDb.insert(body)
-      .then(() => {
-        res.json({});
+      .then((id) => {
+        res.redirect(`cities/${id}`);
       })
       .catch((err) => {
         res.status(500).json({ success: false, message: err.message });
       });
   });
+
+cities.route('/:id')
+  .get((req, res) => {
+    citiesDb.get(req.params.id)
+      .then(row => res.json(row))
+      .catch(err => res.status(500).json({ success: false, message: err.message }));
+  });
+
 
 module.exports = cities;
