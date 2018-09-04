@@ -92,7 +92,60 @@ describe('GET /api/v1/cities', () => {
       .expect(400, /must be a positive/, done);
   });
   afterEach((done) => {
-    citiesDb.drop().finally(() => done());
+    citiesDb.drop()
+      .then(() => done())
+      .catch(done);
+  });
+  after((done) => {
+    server.close(done);
+  });
+});
+
+describe('POST /api/v1/cities', () => {
+  let server;
+  let response;
+  const port = 3001;
+  before((done) => {
+    server = app.listen(port, done);
+  });
+  beforeEach((done) => {
+    citiesDb.create()
+      .then(() => {
+        response = request(`http://localhost:${port}`)
+          .post('/api/v1/cities');
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  afterEach((done) => {
+    citiesDb.drop()
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns a 200 status', (done) => {
+    response
+      .set('Content-Type', 'application/json')
+      .send({ name: 'test 1', country: 'test 1' })
+      .expect(200, done);
+  });
+  it('returns returns a json content type', (done) => {
+    response
+      .set('Content-Type', 'application/json')
+      .send({ name: 'test', country: 'test' })
+      .expect('Content-Type', /json/, done);
+  });
+  it('adds valid city to database', (done) => {
+    const testData = { name: 'Test 1', country: 'Test 2' };
+    response
+      .set('Content-Type', 'application/json')
+      .send(testData)
+      .expect(200)
+      .then(() => citiesDb.list())
+      .then((rows) => {
+        expect(pluck(rows[0], ['name', 'country'])).toEqual(testData);
+      })
+      .then(() => done())
+      .catch(done);
   });
   after((done) => {
     server.close(done);

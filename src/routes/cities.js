@@ -35,6 +35,17 @@ cities.route('/')
       .catch((err) => {
         res.status(500).json({ success: false, message: err.message });
       });
+  })
+  .post((req, res) => {
+    const { body } = req;
+
+    citiesDb.insert(body)
+      .then(() => {
+        res.json({});
+      })
+      .catch((err) => {
+        res.status(500).json({ success: false, message: err.message });
+      });
   });
 
 module.exports = cities;
