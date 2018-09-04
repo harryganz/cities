@@ -7,21 +7,33 @@ cities.route('/')
     let offset;
     try {
       if (req.query.limit) {
-        limit = Number.parseInt(req.query.limit, 10);
+        limit = Number(req.query.limit, 10);
+        if (Number.isNaN(limit)) {
+          throw new Error('Limit must be a number');
+        }
+        if (limit < 0) {
+          throw new Error('Limit must be a positive number');
+        }
       }
       if (req.query.offset) {
-        offset = Number.parseInt(req.query.offset, 10);
+        offset = Number(req.query.offset, 10);
+        if (Number.isNaN(offset)) {
+          throw new Error('Offset must be a number');
+        }
+        if (offset < 0) {
+          throw new Error('Offset must be a positive number');
+        }
       }
     } catch (e) {
-      // TODO send 400 with useful error message
-      res.sendStatus(401);
+      res.status(400).json({ success: false, message: e.message });
+      return;
     }
     citiesDb.list(limit, offset)
       .then((rows) => {
         res.json(rows);
       })
       .catch((err) => {
-        res.status(500).json({ message: err.toString() });
+        res.status(500).json({ success: false, message: err.message });
       });
   });
 
