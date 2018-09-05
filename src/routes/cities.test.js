@@ -157,3 +157,47 @@ describe('POST /api/v1/cities', () => {
     server.close(done);
   });
 });
+describe('GET /api/v1/cities/:id', () => {
+  let server;
+  const testCities = mockCities(100);
+  let response;
+  const port = 3001;
+  before((done) => {
+    server = app.listen(port, done);
+  });
+  beforeEach((done) => {
+    citiesDb.create()
+      .then(() => citiesDb.insert(testCities))
+      .then(() => {
+        response = request(`http://localhost:${port}`);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns a 200 status', (done) => {
+    response.get('/api/v1/cities/1')
+      .expect(200, done);
+  });
+  it('returns the city with the provided id', (done) => {
+    response.get('/api/v1/cities/1')
+      .expect(200)
+      .then((res) => {
+        const { name, country } = res.body;
+        expect({ name, country }).toEqual(testCities[0]);
+        done();
+      })
+      .catch(done);
+  });
+  it('returns a 404 if city not found', (done) => {
+    response.get('/api/v1/cities/9999999')
+      .expect(404, /could not find city/i, done);
+  });
+  afterEach((done) => {
+    citiesDb.drop()
+      .then(() => done())
+      .catch(done);
+  });
+  after((done) => {
+    server.close(done);
+  });
+});

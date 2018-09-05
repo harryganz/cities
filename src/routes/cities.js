@@ -51,7 +51,13 @@ cities.route('/')
 cities.route('/:id')
   .get((req, res) => {
     citiesDb.get(req.params.id)
-      .then(row => res.json(row))
+      .then((row) => {
+        if (typeof row === 'undefined') {
+          res.status(404).json({ success: false, message: `could not find city with id ${req.params.id}` });
+          return;
+        }
+        res.json(row);
+      })
       .catch(err => res.status(500).json({ success: false, message: err.message }));
   });
 

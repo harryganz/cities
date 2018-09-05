@@ -19,10 +19,13 @@ module.exports = {
     const lim = (limit && limit > 0) ? limit : 10;
     const off = (offset && offset > 0) ? offset : 0;
     return knex
-      .select('id', 'name', 'country', 'created_at', 'updated_at')
+      .select()
       .from('cities')
       .limit(lim)
       .offset(off);
   },
-  get: id => knex.first().from('cities').where('id', id),
+  get: id => knex
+    .first()
+    .from('cities')
+    .where('id', id),
 };
