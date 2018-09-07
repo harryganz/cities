@@ -44,7 +44,7 @@ cities.route('/')
     }
     citiesDb.insert(body)
       .then((id) => {
-        res.redirect(`cities/${id}`);
+        res.redirect(`/api/v1/cities/${id}`);
       })
       .catch((err) => {
         res.status(500).json({ success: false, message: err.message });
@@ -79,7 +79,7 @@ cities.route('/:id')
           res.status(400).json({ success: false, message: 'no records updated' });
           return;
         }
-        res.redirect(`cities/${req.params.id}`);
+        res.redirect(`/api/v1/cities/${req.params.id}`);
       })
       .catch((err) => {
         res.status(500).json({ success: false, message: err.message });

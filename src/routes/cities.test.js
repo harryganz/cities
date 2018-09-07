@@ -153,7 +153,7 @@ describe('POST /api/v1/cities', () => {
       .send(testData)
       .expect(302)
       .then((res) => {
-        expect(res.header.location).toMatch(/cities\/1/);
+        expect(res.header.location).toMatch(/\/api\/v1\/cities\/1$/);
         done();
       })
       .catch(done);
@@ -283,7 +283,7 @@ describe('PATCH /api/v1/cities/:id', () => {
       .send(newCity)
       .expect(302)
       .then((res) => {
-        expect(res.headers.location).toMatch(/cities\/1/);
+        expect(res.headers.location).toMatch(/api\/v1\/cities\/1$/);
       })
       .then(() => done())
       .catch(done);
