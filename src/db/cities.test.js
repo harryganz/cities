@@ -199,3 +199,56 @@ describe('cities.get function', () => {
       .catch(done);
   });
 });
+describe('cities.update method', () => {
+  const testData = { name: 'change this', country: 'change this too' };
+  beforeEach((done) => {
+    cities.create()
+      .then(() => cities.insert(testData))
+      .then(() => done())
+      .catch(done);
+  });
+  it('changes the entry with the passed in object', (done) => {
+    const newCity = { id: 1, name: 'city is changed', country: 'country is changed too' };
+    cities.update(newCity)
+      .then(() => cities.get(newCity.id))
+      .then((row) => {
+        expect(row).toEqual(newCity);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns 0 if object with corresponding id is not found', (done) => {
+    const newCity = { id: 5, name: 'test1', country: 'test2' };
+    cities.update(newCity)
+      .then(numRows => expect(numRows).toBe(0))
+      .then(() => done())
+      .catch(done);
+  });
+  it('keeps country field the same if only name is updated', (done) => {
+    const newCity = { id: 1, name: 'new name' };
+    const expected = Object.assign({}, testData, newCity);
+    cities.update(newCity)
+      .then(() => cities.get(newCity.id))
+      .then((row) => {
+        expect(row).toEqual(expected);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('keeps name field the same if only country is updated', (done) => {
+    const newCity = { id: 1, country: 'new country' };
+    const expected = Object.assign({}, testData, newCity);
+    cities.update(newCity)
+      .then(() => cities.get(newCity.id))
+      .then((row) => {
+        expect(row).toEqual(expected);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  afterEach((done) => {
+    cities.drop()
+      .then(() => done())
+      .catch(done);
+  });
+});

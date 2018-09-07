@@ -1,11 +1,10 @@
 const knex = require('./index');
 
-module.exports = {
+const cities = {
   create: () => knex.schema.createTable('cities', (table) => {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.string('country').notNullable();
-    table.timestamps();
   }),
   drop: () => knex.schema.dropTableIfExists('cities'),
   insert: (data) => {
@@ -28,4 +27,13 @@ module.exports = {
     .first()
     .from('cities')
     .where('id', id),
+  update: city => knex
+    .from('cities')
+    .where('id', city.id)
+    .update({
+      name: city.name,
+      country: city.country,
+    }),
 };
+
+module.exports = cities;
