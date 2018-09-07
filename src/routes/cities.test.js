@@ -201,3 +201,55 @@ describe('GET /api/v1/cities/:id', () => {
     server.close(done);
   });
 });
+describe('DELETE /api/v1/cities/:id', () => {
+  let server;
+  let response;
+  const port = 3001;
+  const testData = { name: 'test 1', country: 'test 2' };
+  before((done) => {
+    server = app.listen(port, done);
+  });
+  beforeEach((done) => {
+    citiesDb.create()
+      .then(() => citiesDb.insert(testData))
+      .then(() => {
+        response = request(`http://localhost:${port}`);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns a 204 status if valid id passed in', (done) => {
+    response
+      .delete('/api/v1/cities/1')
+      .expect(204, done);
+  });
+  it('returns a 404 status if invalid id passed in', (done) => {
+    response
+      .delete('/api/v1/cities/2')
+      .expect(404, done);
+  });
+  it('returns a 404 if non-numeric id passed in', (done) => {
+    response
+      .delete('/api/v1/cities/foo')
+      .expect(404, done);
+  });
+  it('delete the record with the corresponding id if valid id passed in', (done) => {
+    response
+      .delete('/api/v1/cities/1')
+      .expect(204)
+      .then(() => citiesDb.get(1))
+      .then((row) => {
+        expect(row).toBe(undefined);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  afterEach((done) => {
+    citiesDb.drop()
+      .then(() => done())
+      .catch(done);
+  });
+  after((done) => {
+    server.close(done);
+  });
+});

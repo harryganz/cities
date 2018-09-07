@@ -59,6 +59,19 @@ cities.route('/:id')
         res.json(row);
       })
       .catch(err => res.status(500).json({ success: false, message: err.message }));
+  })
+  .delete((req, res) => {
+    citiesDb.del(req.params.id)
+      .then((id) => {
+        if (id === 0) {
+          res.status(404).json({ success: false, message: `could not find city with id ${req.params.id}` });
+          return;
+        }
+        res.sendStatus(204);
+      })
+      .catch((err) => {
+        res.status(500).json({ success: false, message: err.message });
+      });
   });
 
 
