@@ -38,7 +38,10 @@ cities.route('/')
   })
   .post((req, res) => {
     const { body } = req;
-
+    if (!/application\/json/g.test(req.get('Content-Type'))) {
+      res.status(400).json({ success: false, message: 'body must be application/json content type' });
+      return;
+    }
     citiesDb.insert(body)
       .then((id) => {
         res.redirect(`cities/${id}`);
@@ -59,6 +62,28 @@ cities.route('/:id')
         res.json(row);
       })
       .catch(err => res.status(500).json({ success: false, message: err.message }));
+  })
+  .patch((req, res) => {
+    const { body } = req;
+
+    if (!/application\/json/g.test(req.get('Content-Type'))) {
+      res.status(400).json({ success: false, message: 'body must be application/json content type' });
+      return;
+    }
+
+    const city = Object.assign({}, body, { id: req.params.id });
+
+    citiesDb.update(city)
+      .then((numRows) => {
+        if (numRows === 0) {
+          res.status(400).json({ success: false, message: 'no records updated' });
+          return;
+        }
+        res.redirect(`cities/${req.params.id}`);
+      })
+      .catch((err) => {
+        res.status(500).json({ success: false, message: err.message });
+      });
   })
   .delete((req, res) => {
     citiesDb.del(req.params.id)

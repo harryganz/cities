@@ -141,6 +141,11 @@ describe('POST /api/v1/cities', () => {
       .then(() => done())
       .catch(done);
   });
+  it('returns a 400 status if the content type is not json', (done) => {
+    response
+      .send('gibberish')
+      .expect(400, done);
+  });
   it('redirects to the newly added item\'s show page', (done) => {
     const testData = { name: 'test 1', country: 'test 2' };
     response
@@ -243,6 +248,66 @@ describe('DELETE /api/v1/cities/:id', () => {
       })
       .then(() => done())
       .catch(done);
+  });
+  afterEach((done) => {
+    citiesDb.drop()
+      .then(() => done())
+      .catch(done);
+  });
+  after((done) => {
+    server.close(done);
+  });
+});
+describe('PATCH /api/v1/cities/:id', () => {
+  let server;
+  let response;
+  const port = 3001;
+  const testCity = { name: 'test1', country: 'test2' };
+  before((done) => {
+    server = app.listen(port, done);
+  });
+  beforeEach((done) => {
+    citiesDb.create()
+      .then(() => citiesDb.insert(testCity))
+      .then(() => {
+        response = request(`http://localhost:${port}`);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('redirects to show page for updated city', (done) => {
+    const newCity = { name: 'test3', country: 'test4' };
+    response
+      .patch('/api/v1/cities/1')
+      .set('Content-Type', 'application/json')
+      .send(newCity)
+      .expect(302)
+      .then((res) => {
+        expect(res.headers.location).toMatch(/cities\/1/);
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('updates database entry with passed in data', (done) => {
+    const newCity = { name: 'updated name', country: 'updated country' };
+
+    response
+      .patch('/api/v1/cities/1')
+      .set('Content-Type', 'application/json')
+      .send(newCity)
+      .expect(302)
+      .then(() => citiesDb.get(1))
+      .then((row) => {
+        expect(row).toEqual(Object.assign({}, { id: 1 }, newCity));
+      })
+      .then(() => done())
+      .catch(done);
+  });
+  it('returns a 400 status if content type is not json', (done) => {
+    response
+      .patch('/api/v1/cities/1')
+      .send('gibberish')
+      .expect(400, done);
   });
   afterEach((done) => {
     citiesDb.drop()
