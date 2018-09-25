@@ -8,3 +8,13 @@ citiesDb.create()
   .then(() => {
     app.listen(port);
   });
+
+function cleanUp() {
+  console.log('cleaning up');
+  citiesDb.drop().then(() => {
+    process.exit();
+  });
+}
+
+process.on('SIGINT', cleanUp);
+process.on('SIGHUP', cleanUp);

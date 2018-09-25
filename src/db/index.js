@@ -1,8 +1,11 @@
 const knex = require('knex');
 
 module.exports = knex({
-  client: 'sqlite3',
+  client: 'pg',
   connection: {
-    filename: ':memory:',
+    host: '127.0.0.1',
+    user: 'citiesusr',
+    password: 'citiesusr',
+    database: 'cities_test',
   },
 });
