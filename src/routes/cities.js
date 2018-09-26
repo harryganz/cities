@@ -53,6 +53,11 @@ cities.route('/')
 
 cities.route('/:id')
   .get((req, res) => {
+    if (Number.isNaN(Number(req.params.id))) {
+      res.status(400).json({ success: false, message: `id (${req.params.id}) is not a number` });
+      return;
+    }
+
     citiesDb.get(req.params.id)
       .then((row) => {
         if (typeof row === 'undefined') {
@@ -86,9 +91,14 @@ cities.route('/:id')
       });
   })
   .delete((req, res) => {
+    if (Number.isNaN(Number(req.params.id))) {
+      res.status(400).json({ success: false, message: `id (${req.params.id}) is not a number` });
+      return;
+    }
+
     citiesDb.del(req.params.id)
-      .then((id) => {
-        if (id === 0) {
+      .then((numRows) => {
+        if (numRows === 0) {
           res.status(404).json({ success: false, message: `could not find city with id ${req.params.id}` });
           return;
         }

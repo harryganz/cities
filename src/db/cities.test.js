@@ -99,7 +99,7 @@ describe('cities.del', () => {
       .then(() => knex.count('id as num').from('cities'))
       .then((rows) => {
         const [count] = rows;
-        expect(count.num).toBe(1);
+        expect(Number(count.num)).toBe(1);
       })
       .then(() => done())
       .catch(done);

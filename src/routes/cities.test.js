@@ -197,6 +197,10 @@ describe('GET /api/v1/cities/:id', () => {
     response.get('/api/v1/cities/9999999')
       .expect(404, /could not find city/i, done);
   });
+  it('returns a 400 is non-numeric passed in', (done) => {
+    response.get('/api/v1/cities/foo')
+      .expect(400, done);
+  });
   afterEach((done) => {
     citiesDb.drop()
       .then(() => done())
@@ -233,10 +237,10 @@ describe('DELETE /api/v1/cities/:id', () => {
       .delete('/api/v1/cities/2')
       .expect(404, done);
   });
-  it('returns a 404 if non-numeric id passed in', (done) => {
+  it('returns a 400 if non-numeric id passed in', (done) => {
     response
       .delete('/api/v1/cities/foo')
-      .expect(404, done);
+      .expect(400, done);
   });
   it('delete the record with the corresponding id if valid id passed in', (done) => {
     response
