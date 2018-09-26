@@ -11,7 +11,7 @@ const cities = {
     if (typeof data !== 'object') {
       throw new Error('inserted data must be object or array');
     }
-    return knex.insert(data).into('cities');
+    return knex.insert(data).into('cities').returning('id');
   },
   del: id => knex.del().from('cities').where('id', id),
   list: (limit, offset) => {
